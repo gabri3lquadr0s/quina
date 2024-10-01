@@ -1,0 +1,1 @@
+Mini simulador da Quina para um trabalho de matemática.
