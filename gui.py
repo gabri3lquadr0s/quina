@@ -1,10 +1,7 @@
-from dataclasses import asdict
-
-import dearpygui.dearpygui as dpg
-from dearpygui.dearpygui import maximize_viewport
-
-#import pandas as pd
+from itertools import zip_longest
 from quina import Quina
+import dearpygui.dearpygui as dpg
+import pandas as pd
 
 quina = Quina()
 
@@ -12,7 +9,6 @@ def send_draws():
     try:
         draw = [[i for i in dpg.get_values([i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15]) if i != 0]]
         send = quina.read_bets(draw)
-        print(send)
         for j in draw:
             if j not in send['err']:
                 with dpg.table_row(parent="row"):
@@ -20,10 +16,13 @@ def send_draws():
 
         dpg.set_value(prize, f"Valor do Prêmio: {send['current_total_prize']}")
     except Exception as e:
-        print(e)
+        dpg.add_text(f"Erro em send_draws: {e}", parent="erros")
+
+def parse_from_excel():
+    asd=''
 
 def execute():
-    #try:
+    try:
         finish = quina.execute_drawn()
         dpg.set_value(numbers, f"Números sorteados: {finish['drawn_values']}")
         del finish['drawn_values']
@@ -33,12 +32,18 @@ def execute():
             pass
         for i in finish.keys():
             dpg.add_table_column(label=i, tag=i, parent="row2")
-            for ii in finish[i]:
-                with dpg.table_row(parent="row2"):
-                    dpg.add_text(str(ii))
 
-    # except Exception as e:
-    #     print(e)
+        for j,k,l,m,n,b in zip_longest(*list(finish.values())):
+            with dpg.table_row(parent="row2"):
+                dpg.add_text(f"{j}")
+                dpg.add_text(f"{k}")
+                dpg.add_text(f"{l}")
+                dpg.add_text(f"{m}")
+                dpg.add_text(f"{n}")
+                dpg.add_text(f"{b}")
+
+    except Exception as e:
+        dpg.add_text(f"Erro em execute: {e}", parent="erros")
 
 dpg.create_context()
 dpg.create_viewport(title='Simulador da Quina', width=1000, height=800)
@@ -77,6 +82,9 @@ with dpg.window(label="SORTEIO", tag="sorteio"):
     numbers = dpg.add_text("Números sorteados: ", tag="numbers")
     with dpg.table(tag="row2"):
         pass
+
+with dpg.window(label="ERROS", tag="erros"):
+    pass
 
 dpg.setup_dearpygui()
 dpg.show_viewport()

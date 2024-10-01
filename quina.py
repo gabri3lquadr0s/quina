@@ -74,7 +74,7 @@ class Quina():
     try:
       drawn_values = list((choice(range(self.bet_range_start, self.bet_range_end + 1), self.bet_min, replace=False)))
       drawn_values = [int(k) for k in drawn_values]
-      results = {"drawn_values": drawn_values, f"{self.bet_min}_winner": [], f"{self.bet_min-1}_winner": [], f"{self.bet_min-2}_winner": [], f"{self.bet_min-3}_winners": [], f"{self.bet_min-4}_winners": [], "non_winners": []}
+      results = {"drawn_values": drawn_values, f"{self.bet_min}_winner": [], f"{self.bet_min-1}_winner": [], f"{self.bet_min-2}_winner": [], f"{self.bet_min-3}_winner": [], f"{self.bet_min-4}_winner": [], "non_winners": []}
 
       for i in self.bets:
         count = 0
@@ -89,7 +89,6 @@ class Quina():
           results["non_winners"] += [i]
 
       self.bets = []
-      print(results)
       return results
 
     except Exception as e:
