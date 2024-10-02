@@ -16,7 +16,7 @@ def send_draws():
 
         dpg.set_value(prize, f"Valor do Prêmio: {send['current_total_prize']}")
     except Exception as e:
-        dpg.add_text(f"Erro em send_draws: {e}", parent="erros")
+        dpg.add_text(f"Erro em send_draws: {e}", parent="row3")
 
 def parse_from_excel():
     asd=''
@@ -43,7 +43,7 @@ def execute():
                 dpg.add_text(f"{b}")
 
     except Exception as e:
-        dpg.add_text(f"Erro em execute: {e}", parent="erros")
+        dpg.add_text(f"Erro em execute: {e}", parent="row3")
 
 dpg.create_context()
 dpg.create_viewport(title='Simulador da Quina', width=1000, height=800)
@@ -69,7 +69,7 @@ with dpg.window(label="LOTÉRICA"):
         i15 = dpg.add_input_int(label="Décimo Quinto Número", default_value=0, width=100, min_value=0, max_value=80, tag="i15")
 
     dpg.add_text("Ou insira apostas através de um arquivo Excel")
-    dpg.add_button(label="Selecione um arquivo", callback=lambda: dpg.show_item("file_select"))
+    dpg.add_button(label="Selecione um arquivo")
     dpg.add_button(label="Apostar", tag="insert_draw", callback=send_draws)
 
 with dpg.window(label="APOSTAS"):
@@ -84,7 +84,8 @@ with dpg.window(label="SORTEIO", tag="sorteio"):
         pass
 
 with dpg.window(label="ERROS", tag="erros"):
-    pass
+    with dpg.table(tag="row3"):
+        pass
 
 dpg.setup_dearpygui()
 dpg.show_viewport()

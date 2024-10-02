@@ -1,7 +1,3 @@
-#import pandas as pd
-#import numpy as np
-#from numpy.random import seed
-#from numpy.random import randint
 from numpy.random import choice
 
 class Quina():
