@@ -46,6 +46,7 @@ def execute():
         del finish['drawn_values']
         try:
             dpg.delete_item("row2", children_only=True)
+            dpg.delete_item("row", children_only=True)
         except:
             pass
         for i in finish.keys():
