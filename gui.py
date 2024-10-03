@@ -6,13 +6,9 @@ import pandas as pd
 
 quina = Quina()
 
-def send_draws(draw_from_file=""):
+def send_draws():
     try:
-        draw = []
-        if draw_from_file == "":
-            draw = [[i for i in dpg.get_values([i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15]) if i != 0]]
-        else:
-            draw = draw_from_file
+        draw = [[i for i in dpg.get_values([i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15]) if i != 0]]
         send = quina.read_bets(draw)
         for j in draw:
             if j not in send['err']:
@@ -28,12 +24,18 @@ def parse_from_excel():
     filename = fd.askopenfilename()
     try:
         df = pd.read_excel(filename)
-        new_bets = []
+        draw = []
         for index, row in df.iterrows():
             parsed_row = [int(i) for i in list(row) if str(i) != "nan"]
-            new_bets.append(parsed_row)
+            draw.append(parsed_row)
 
-        send_draws(new_bets)
+        send = quina.read_bets(draw)
+        for j in draw:
+            if j not in send['err']:
+                with dpg.table_row(parent="row"):
+                    dpg.add_text(str(j))
+
+        dpg.set_value(prize, f"Valor do Prêmio: {send['current_total_prize']}")
 
     except Exception as e:
         with dpg.table_row(parent="row3"):
@@ -90,7 +92,7 @@ with dpg.window(label="LOTÉRICA"):
 
     dpg.add_text("Ou insira apostas através de um arquivo Excel")
     dpg.add_button(label="Selecione um arquivo excel", callback=parse_from_excel)
-    dpg.add_button(label="Apostar", tag="insert_draw", callback=send_draws)
+    dpg.add_button(label="Apostar", callback=send_draws)
 
 with dpg.window(label="APOSTAS"):
     with dpg.table(header_row=False, tag="row"):
