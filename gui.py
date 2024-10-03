@@ -1,13 +1,18 @@
 from itertools import zip_longest
 from quina import Quina
+from tkinter import filedialog as fd
 import dearpygui.dearpygui as dpg
 import pandas as pd
 
 quina = Quina()
 
-def send_draws():
+def send_draws(draw_from_file=""):
     try:
-        draw = [[i for i in dpg.get_values([i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15]) if i != 0]]
+        draw = []
+        if draw_from_file == "":
+            draw = [[i for i in dpg.get_values([i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15]) if i != 0]]
+        else:
+            draw = draw_from_file
         send = quina.read_bets(draw)
         for j in draw:
             if j not in send['err']:
@@ -16,10 +21,23 @@ def send_draws():
 
         dpg.set_value(prize, f"Valor do Prêmio: {send['current_total_prize']}")
     except Exception as e:
-        dpg.add_text(f"Erro em send_draws: {e}", parent="row3")
+        with dpg.table_row(parent="row3"):
+            dpg.add_text(f"Erro em send_draws: {e}")
 
 def parse_from_excel():
-    asd=''
+    filename = fd.askopenfilename()
+    try:
+        df = pd.read_excel(filename)
+        new_bets = []
+        for index, row in df.iterrows():
+            parsed_row = [int(i) for i in list(row) if str(i) != "nan"]
+            new_bets.append(parsed_row)
+
+        send_draws(new_bets)
+
+    except Exception as e:
+        with dpg.table_row(parent="row3"):
+            dpg.add_text(f"Erro em send_draws: {e}")
 
 def execute():
     try:
@@ -43,7 +61,8 @@ def execute():
                 dpg.add_text(f"{b}")
 
     except Exception as e:
-        dpg.add_text(f"Erro em execute: {e}", parent="row3")
+        with dpg.table_row(parent="row3"):
+            dpg.add_text(f"Erro em send_draws: {e}")
 
 dpg.create_context()
 dpg.create_viewport(title='Simulador da Quina', width=1000, height=800)
@@ -69,7 +88,7 @@ with dpg.window(label="LOTÉRICA"):
         i15 = dpg.add_input_int(label="Décimo Quinto Número", default_value=0, width=100, min_value=0, max_value=80, tag="i15")
 
     dpg.add_text("Ou insira apostas através de um arquivo Excel")
-    dpg.add_button(label="Selecione um arquivo")
+    dpg.add_button(label="Selecione um arquivo excel", callback=parse_from_excel)
     dpg.add_button(label="Apostar", tag="insert_draw", callback=send_draws)
 
 with dpg.window(label="APOSTAS"):
@@ -85,7 +104,7 @@ with dpg.window(label="SORTEIO", tag="sorteio"):
 
 with dpg.window(label="ERROS", tag="erros"):
     with dpg.table(tag="row3"):
-        pass
+        dpg.add_table_column()
 
 dpg.setup_dearpygui()
 dpg.show_viewport()

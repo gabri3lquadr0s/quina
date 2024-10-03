@@ -1,3 +1,4 @@
 pandas
 dearpygui
 numpy
+openpyxl
